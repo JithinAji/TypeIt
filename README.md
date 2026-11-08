@@ -6,7 +6,7 @@
 
 A lightweight, zero-dependency JavaScript typing animation library with natural human-like speed variation and chainable method calls.
 <br/>
-👉 **[View Live Demo](https://jithinaji.github.io/typeit/)**
+👉 **[View Live Demo](https://jithinaji.github.io/TypeIt/)**
 
 ---
 
@@ -172,14 +172,14 @@ typist.clear({ count: 5, animated: true });
 ## 🖥️ Live Demo
 
 Experience the live interactive demo here:
-👉 **[https://jithinaji.github.io/typeit/](https://jithinaji.github.io/typeit/)**
+👉 **[https://jithinaji.github.io/TypeIt/](https://jithinaji.github.io/TypeIt/)**
 
 Or run it locally:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/JithinAji/typeit.git
-   cd typeit
+   git clone https://github.com/JithinAji/TypeIt.git
+   cd TypeIt
    ```
 2. Build the project:
    ```bash

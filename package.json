@@ -35,12 +35,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JithinAji/typeit.git"
+    "url": "https://github.com/JithinAji/TypeIt.git"
   },
   "bugs": {
-    "url": "https://github.com/JithinAji/typeit/issues"
+    "url": "https://github.com/JithinAji/TypeIt/issues"
   },
-  "homepage": "https://github.com/JithinAji/typeit#readme",
+  "homepage": "https://github.com/JithinAji/TypeIt#readme",
   "publishConfig": {
     "access": "public"
   },
