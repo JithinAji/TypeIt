@@ -66,7 +66,16 @@ async function build() {
         js: 'if (typeof TypeIt !== "undefined" && TypeIt.default) TypeIt = TypeIt.default;',
       },
     });
-    // 5. Copy browser bundle to demo/ for standalone demo and GitHub Pages
+    // 5. Copy TypeScript declarations to dist/
+    if (fs.existsSync(path.resolve(__dirname, 'src/index.d.ts'))) {
+      fs.copyFileSync(
+        path.resolve(__dirname, 'src/index.d.ts'),
+        path.resolve(__dirname, 'dist/index.d.ts')
+      );
+      console.log('✔ Copied dist/index.d.ts (TypeScript definitions)');
+    }
+
+    // 6. Copy browser bundle to demo/ for standalone demo and GitHub Pages
     fs.copyFileSync(
       path.resolve(__dirname, 'dist/typeit.min.js'),
       path.resolve(__dirname, 'demo/typeit.min.js')
