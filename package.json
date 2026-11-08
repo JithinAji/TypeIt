@@ -1,0 +1,50 @@
+{
+  "name": "@jithinaji/typeit",
+  "version": "1.0.0",
+  "description": "A lightweight JavaScript typing animation library with natural speed variation and chaining support.",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "unpkg": "./dist/typeit.min.js",
+  "jsdelivr": "./dist/typeit.min.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "node build.js",
+    "prepare": "node build.js"
+  },
+  "keywords": [
+    "typewriter",
+    "typing",
+    "typing-effect",
+    "typeit",
+    "text-animation",
+    "animation",
+    "javascript"
+  ],
+  "author": "JithinAji <jithin_aji@outlook.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JithinAji/typeit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JithinAji/typeit/issues"
+  },
+  "homepage": "https://github.com/JithinAji/typeit#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}

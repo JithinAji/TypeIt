@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>@jithinaji/typeit - Live Demo</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-heading: #f0f6fc;
+      --accent: #58a6ff;
+      --accent-hover: #79c0ff;
+      --cursor: #58a6ff;
+      --danger: #f85149;
+      --success: #3fb950;
+      --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      max-width: 700px;
+    }
+
+    header h1 {
+      color: var(--text-heading);
+      font-size: 2.4rem;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      color: #8b949e;
+      font-size: 1.1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .terminal-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .terminal-header {
+      background: #21262d;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .dot-red { background: #ff5f56; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green { background: #27c93f; }
+
+    .terminal-title {
+      color: #8b949e;
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+      margin-left: 10px;
+    }
+
+    .terminal-body {
+      padding: 32px 24px;
+      min-height: 180px;
+      font-family: var(--font-mono);
+      font-size: 1.4rem;
+      line-height: 1.6;
+      color: var(--text-heading);
+      display: flex;
+      align-items: center;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 3px;
+      height: 1.3em;
+      background: var(--cursor);
+      vertical-align: middle;
+      margin-left: 2px;
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .controls-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .controls-panel {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-heading);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .val-badge {
+      color: var(--accent);
+      font-family: var(--font-mono);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .button-group {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    button {
+      background: #21262d;
+      color: var(--text-heading);
+      border: 1px solid var(--border);
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    button:hover {
+      background: #30363d;
+      border-color: #8b949e;
+    }
+
+    button.primary {
+      background: #238636;
+      border-color: rgba(240, 246, 252, 0.1);
+      color: #fff;
+    }
+
+    button.primary:hover {
+      background: #2ea043;
+    }
+
+    button.danger {
+      background: rgba(248, 81, 73, 0.15);
+      border-color: var(--danger);
+      color: #ff7b72;
+    }
+
+    button.danger:hover {
+      background: rgba(248, 81, 73, 0.3);
+    }
+
+    .code-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .code-card h3 {
+      font-size: 1rem;
+      color: var(--text-heading);
+      margin-bottom: 12px;
+    }
+
+    pre {
+      background: #090d13;
+      padding: 14px;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      overflow-x: auto;
+      color: #79c0ff;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>@jithinaji/typeit</h1>
+    <p>A lightweight JavaScript typing animation library with natural human-like variation.</p>
+  </header>
+
+  <div class="container">
+    <div class="terminal-card">
+      <div class="terminal-header">
+        <span class="dot dot-red"></span>
+        <span class="dot dot-yellow"></span>
+        <span class="dot dot-green"></span>
+        <span class="terminal-title">demo.js</span>
+      </div>
+      <div class="terminal-body">
+        <span id="typing-target"></span><span class="cursor"></span>
+      </div>
+    </div>
+
+    <div class="controls-panel">
+      <div class="control-group">
+        <label for="speedRange">
+          Typing Speed
+          <span class="val-badge" id="speedVal">150ms</span>
+        </label>
+        <input type="range" id="speedRange" min="20" max="400" value="150" step="10">
+      </div>
+
+      <div class="control-group">
+        <label for="varRange">
+          Speed Variation
+          <span class="val-badge" id="varVal">50ms</span>
+        </label>
+        <input type="range" id="varRange" min="0" max="100" value="50" step="5">
+      </div>
+
+      <div class="button-group">
+        <button class="primary" id="btnTypeSentence">Type Greeting</button>
+        <button id="btnTypeChain">Chain Multiple Phrases</button>
+        <button class="danger" id="btnClearAnimated">Animated Clear</button>
+        <button class="danger" id="btnClearInstant">Instant Clear</button>
+      </div>
+    </div>
+
+    <div class="code-card">
+      <h3>Quick Usage</h3>
+      <pre><code>// Browser / CDN
+const element = document.getElementById("target");
+const typist = new TypeIt({
+  element: element,
+  typingSpeed: 120,
+  speedVariation: 40
+});
+
+typist
+  .type("Hello, world!")
+  .type(" Welcome to modern web development.");</code></pre>
+    </div>
+  </div>
+
+  <!-- Load the built global script -->
+  <script src="../dist/typeit.min.js"></script>
+  <script>
+    const target = document.getElementById('typing-target');
+    const speedRange = document.getElementById('speedRange');
+    const varRange = document.getElementById('varRange');
+    const speedVal = document.getElementById('speedVal');
+    const varVal = document.getElementById('varVal');
+
+    // Initialize TypeIt with target element
+    const typist = new TypeIt({
+      element: target,
+      typingSpeed: 150,
+      speedVariation: 50
+    });
+
+    // Initial greeting
+    typist.type("Hello! Welcome to @jithinaji/typeit.");
+
+    // Control listeners
+    speedRange.addEventListener('input', (e) => {
+      const val = Number(e.target.value);
+      speedVal.textContent = `${val}ms`;
+      typist.setTypingSpeed(val);
+    });
+
+    varRange.addEventListener('input', (e) => {
+      const val = Number(e.target.value);
+      varVal.textContent = `${val}ms`;
+      typist.setVariationSpeed(val);
+    });
+
+    document.getElementById('btnTypeSentence').addEventListener('click', () => {
+      typist.type(" This is typed with natural speed variation.");
+    });
+
+    document.getElementById('btnTypeChain').addEventListener('click', () => {
+      typist
+        .type(" Smooth.")
+        .type(" Chained.")
+        .type(" Lightweight.");
+    });
+
+    document.getElementById('btnClearAnimated').addEventListener('click', () => {
+      typist.clear({ animated: true });
+    });
+
+    document.getElementById('btnClearInstant').addEventListener('click', () => {
+      typist.clear({ animated: false });
+    });
+  </script>
+</body>
+</html>
