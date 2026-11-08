@@ -5,6 +5,8 @@
 [![bundle size](https://img.shields.io/bundlephobia/minzip/@jithinaji/typeit?style=flat-square)](https://bundlephobia.com/package/@jithinaji/typeit)
 
 A lightweight, zero-dependency JavaScript typing animation library with natural human-like speed variation and chainable method calls.
+<br/>
+👉 **[View Live Demo](https://jithinaji.github.io/typeit/)**
 
 ---
 
@@ -169,7 +171,10 @@ typist.clear({ count: 5, animated: true });
 
 ## 🖥️ Live Demo
 
-An interactive demo is included in the `demo/` folder:
+Experience the live interactive demo here:
+👉 **[https://jithinaji.github.io/typeit/](https://jithinaji.github.io/typeit/)**
+
+Or run it locally:
 
 1. Clone the repository:
    ```bash

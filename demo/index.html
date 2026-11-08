@@ -229,6 +229,33 @@
       overflow-x: auto;
       color: #79c0ff;
     }
+
+    .header-links {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .header-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.88rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      transition: all 0.2s ease;
+    }
+
+    .header-link:hover {
+      background: #21262d;
+      border-color: var(--accent);
+      color: var(--accent-hover);
+    }
   </style>
 </head>
 <body>
@@ -236,6 +263,10 @@
   <header>
     <h1>@jithinaji/typeit</h1>
     <p>A lightweight JavaScript typing animation library with natural human-like variation.</p>
+    <div class="header-links">
+      <a href="https://github.com/JithinAji/typeit" target="_blank" rel="noopener noreferrer" class="header-link">GitHub Repository</a>
+      <a href="https://www.npmjs.com/package/@jithinaji/typeit" target="_blank" rel="noopener noreferrer" class="header-link">npm Package</a>
+    </div>
   </header>
 
   <div class="container">
@@ -293,7 +324,7 @@ typist
   </div>
 
   <!-- Load the built global script -->
-  <script src="../dist/typeit.min.js"></script>
+  <script src="./typeit.min.js"></script>
   <script>
     const target = document.getElementById('typing-target');
     const speedRange = document.getElementById('speedRange');

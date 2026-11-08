@@ -66,7 +66,18 @@ async function build() {
         js: 'if (typeof TypeIt !== "undefined" && TypeIt.default) TypeIt = TypeIt.default;',
       },
     });
-    console.log('✔ Built dist/typeit.min.js (Minified Browser IIFE)');
+    // 5. Copy browser bundle to demo/ for standalone demo and GitHub Pages
+    fs.copyFileSync(
+      path.resolve(__dirname, 'dist/typeit.min.js'),
+      path.resolve(__dirname, 'demo/typeit.min.js')
+    );
+    if (fs.existsSync(path.resolve(__dirname, 'dist/typeit.min.js.map'))) {
+      fs.copyFileSync(
+        path.resolve(__dirname, 'dist/typeit.min.js.map'),
+        path.resolve(__dirname, 'demo/typeit.min.js.map')
+      );
+    }
+    console.log('✔ Copied dist/typeit.min.js to demo/');
 
     console.log('✨ Build completed successfully!');
   } catch (error) {
