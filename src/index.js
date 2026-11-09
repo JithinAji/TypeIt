@@ -2,7 +2,7 @@
 
 const TypeIt = function (data) {
   this.settings = {};
-  if(data instanceof Element) {
+  if (data instanceof Element) {
     this.settings.element = data;
     this.settings.typingSpeed = 150;
     this.settings.speedVariation = 50;
@@ -17,12 +17,13 @@ const TypeIt = function (data) {
   this.queue = [];
   this.isTyping = false;
 
+  this.events = {};
 }
 
 TypeIt.prototype.type = function (content) {
   this.queue.push(content);
 
-  if(!this.isTyping) {
+  if (!this.isTyping) {
     this.next();
   }
 
@@ -31,8 +32,9 @@ TypeIt.prototype.type = function (content) {
 
 
 TypeIt.prototype.next = function () {
-  if(this.queue.length === 0) {
+  if (this.queue.length === 0) {
     this.isTyping = false;
+    this.emit("complete");
     return;
   }
 
@@ -46,7 +48,7 @@ TypeIt.prototype.next = function () {
   let index = 0;
 
   const addContent = () => {
-    if(index >= content.length) {
+    if (index >= content.length) {
       this.next();
       return;
     }
@@ -54,12 +56,12 @@ TypeIt.prototype.next = function () {
     element.textContent += content[index];
     index++;
 
-    const variation = (Math.random() * 2 -1) * settings.speedVariation;
+    const variation = (Math.random() * 2 - 1) * settings.speedVariation;
 
     const delay = Math.max(0, settings.typingSpeed + variation);
 
     this.timer = setTimeout(addContent, delay);
-     
+
   }
 
   addContent();
@@ -67,14 +69,14 @@ TypeIt.prototype.next = function () {
 }
 
 TypeIt.prototype.setTypingSpeed = function (speed) {
-  if(typeof speed == "number") {
+  if (typeof speed == "number") {
     this.settings.typingSpeed = speed;
   }
   return this;
 }
 
 TypeIt.prototype.setVariationSpeed = function (speed) {
-  if(typeof speed == "number") {
+  if (typeof speed == "number") {
     this.settings.speedVariation = speed;
   }
   return this;
@@ -88,9 +90,9 @@ TypeIt.prototype.clear = function (options = {}) {
   const count = Math.max(
     0,
     Math.floor(options.count ?? element.textContent.length)
-  ) 
+  )
 
-  if(count <= 0) {
+  if (count <= 0) {
     return this;
   }
 
@@ -100,10 +102,12 @@ TypeIt.prototype.clear = function (options = {}) {
   this.queue = [];
   this.isTyping = false;
 
-  if(!animated) {
+  if (!animated) {
     element.textContent = Array.from(element.textContent)
-                            .slice(0, -count)
-                            .join("");
+      .slice(0, -count)
+      .join("");
+
+    this.emit("clear");
 
     return this;
   }
@@ -111,15 +115,18 @@ TypeIt.prototype.clear = function (options = {}) {
   let deleted = 0;
 
   const removeContent = () => {
-    if(deleted >= count || !element.textContent.length) {
+    if (deleted >= count || !element.textContent.length) {
       this.timer = null;
       this.isTyping = false;
+
+      this.emit("clear");
+
       return;
     }
 
     element.textContent = Array.from(element.textContent)
-                              .slice(0, -1)
-                              .join("");
+      .slice(0, -1)
+      .join("");
 
     deleted++;
 
@@ -132,6 +139,50 @@ TypeIt.prototype.clear = function (options = {}) {
 
   this.isTyping = true;
   removeContent();
+
+  return this;
+}
+
+TypeIt.prototype.on = function (event, callback) {
+  if (typeof callback !== "function") {
+    return this;
+  }
+
+  if (!this.events[event]) {
+    this.events[event] = [];
+  }
+
+  this.events[event].push(callback);
+
+  return this;
+}
+
+TypeIt.prototype.off = function (event, callback) {
+  if (!this.events[event]) {
+    return this;
+  }
+
+  if (typeof callback === "function") {
+    this.events[event] = this.events[event].filter(function (cb) {
+      return cb !== callback;
+    });
+  } else {
+    delete this.events[event];
+  }
+
+  return this;
+}
+
+TypeIt.prototype.emit = function (event, ...args) {
+  const callbacks = this.events[event];
+
+  if (!callbacks || callbacks.length === 0) {
+    return this;
+  }
+
+  callbacks.slice().forEach(function (callback) {
+    callback.apply(this, args);
+  }, this);
 
   return this;
 }

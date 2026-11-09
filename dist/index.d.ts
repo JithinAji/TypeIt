@@ -53,11 +53,34 @@ export class TypeIt {
    */
   setVariationSpeed(speed: number): this;
 
+  events: Record<string, ((...args: any[]) => void)[]>;
+
   /**
    * Clears characters from the element.
    * @param options Configuration options for deletion.
    */
   clear(options?: ClearOptions): this;
+
+  /**
+   * Registers an event listener callback.
+   * @param event The event name to listen to.
+   * @param callback The function to execute when the event is emitted.
+   */
+  on(event: string, callback: (...args: any[]) => void): this;
+
+  /**
+   * Removes a specific event listener or all listeners for an event.
+   * @param event The event name.
+   * @param callback The specific callback to remove. If omitted, removes all callbacks for the event.
+   */
+  off(event: string, callback?: (...args: any[]) => void): this;
+
+  /**
+   * Emits an event to all registered listeners.
+   * @param event The event name to emit.
+   * @param args Arguments to pass to the callbacks.
+   */
+  emit(event: string, ...args: any[]): this;
 }
 
 export default TypeIt;

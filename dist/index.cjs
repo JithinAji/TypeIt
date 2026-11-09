@@ -37,6 +37,7 @@ var TypeIt = function(data) {
   this.timer = null;
   this.queue = [];
   this.isTyping = false;
+  this.events = {};
 };
 TypeIt.prototype.type = function(content) {
   this.queue.push(content);
@@ -48,6 +49,7 @@ TypeIt.prototype.type = function(content) {
 TypeIt.prototype.next = function() {
   if (this.queue.length === 0) {
     this.isTyping = false;
+    this.emit("complete");
     return;
   }
   this.isTyping = true;
@@ -98,6 +100,7 @@ TypeIt.prototype.clear = function(options = {}) {
   this.isTyping = false;
   if (!animated) {
     element.textContent = Array.from(element.textContent).slice(0, -count).join("");
+    this.emit("clear");
     return this;
   }
   let deleted = 0;
@@ -105,6 +108,7 @@ TypeIt.prototype.clear = function(options = {}) {
     if (deleted >= count || !element.textContent.length) {
       this.timer = null;
       this.isTyping = false;
+      this.emit("clear");
       return;
     }
     element.textContent = Array.from(element.textContent).slice(0, -1).join("");
@@ -115,6 +119,39 @@ TypeIt.prototype.clear = function(options = {}) {
   };
   this.isTyping = true;
   removeContent();
+  return this;
+};
+TypeIt.prototype.on = function(event, callback) {
+  if (typeof callback !== "function") {
+    return this;
+  }
+  if (!this.events[event]) {
+    this.events[event] = [];
+  }
+  this.events[event].push(callback);
+  return this;
+};
+TypeIt.prototype.off = function(event, callback) {
+  if (!this.events[event]) {
+    return this;
+  }
+  if (typeof callback === "function") {
+    this.events[event] = this.events[event].filter(function(cb) {
+      return cb !== callback;
+    });
+  } else {
+    delete this.events[event];
+  }
+  return this;
+};
+TypeIt.prototype.emit = function(event, ...args) {
+  const callbacks = this.events[event];
+  if (!callbacks || callbacks.length === 0) {
+    return this;
+  }
+  callbacks.slice().forEach(function(callback) {
+    callback.apply(this, args);
+  }, this);
   return this;
 };
 var index_default = TypeIt;
