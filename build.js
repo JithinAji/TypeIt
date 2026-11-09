@@ -1,98 +1,42 @@
 const esbuild = require('esbuild');
 const fs = require('fs');
-const path = require('path');
 
-// Ensure dist directory exists
-const distDir = path.resolve(__dirname, 'dist');
-if (!fs.existsSync(distDir)) {
-  fs.mkdirSync(distDir, { recursive: true });
-}
+const baseConfig = {
+  entryPoints: ['src/index.js'],
+  bundle: true,
+  sourcemap: true,
+};
+
+const iifeFooter = 'if (typeof TypeIt !== "undefined" && TypeIt.default) TypeIt = TypeIt.default;';
+
+const targets = [
+  { ...baseConfig, outfile: 'dist/index.mjs', format: 'esm', platform: 'browser' },
+  { ...baseConfig, outfile: 'dist/index.cjs', format: 'cjs', platform: 'node', footer: { js: 'module.exports = TypeIt; module.exports.default = TypeIt;' } },
+  { ...baseConfig, outfile: 'dist/index.global.js', format: 'iife', globalName: 'TypeIt', platform: 'browser', footer: { js: iifeFooter } },
+  { ...baseConfig, outfile: 'dist/typeit.min.js', format: 'iife', globalName: 'TypeIt', platform: 'browser', minify: true, footer: { js: iifeFooter } },
+];
 
 async function build() {
+  const start = Date.now();
   console.log('⚡ Building @jithinaji/typeit...');
 
-  try {
-    // 1. ESM build (for bundlers like Vite, Webpack, rollup and modern Node)
-    await esbuild.build({
-      entryPoints: ['src/index.js'],
-      outfile: 'dist/index.mjs',
-      format: 'esm',
-      bundle: true,
-      platform: 'browser',
-      sourcemap: true,
-    });
-    console.log('✔ Built dist/index.mjs (ESM)');
+  await Promise.all(targets.map((config) => esbuild.build(config)));
 
-    // 2. CommonJS build (for Node / legacy bundlers)
-    await esbuild.build({
-      entryPoints: ['src/index.js'],
-      outfile: 'dist/index.cjs',
-      format: 'cjs',
-      bundle: true,
-      platform: 'node',
-      sourcemap: true,
-      footer: {
-        js: 'module.exports = TypeIt; module.exports.default = TypeIt;',
-      },
-    });
-    console.log('✔ Built dist/index.cjs (CommonJS)');
-
-    // 3. Browser IIFE script (unminified)
-    await esbuild.build({
-      entryPoints: ['src/index.js'],
-      outfile: 'dist/index.global.js',
-      format: 'iife',
-      globalName: 'TypeIt',
-      bundle: true,
-      platform: 'browser',
-      sourcemap: true,
-      footer: {
-        js: 'if (typeof TypeIt !== "undefined" && TypeIt.default) TypeIt = TypeIt.default;',
-      },
-    });
-    console.log('✔ Built dist/index.global.js (Browser IIFE)');
-
-    // 4. Browser IIFE script (minified for CDN / production)
-    await esbuild.build({
-      entryPoints: ['src/index.js'],
-      outfile: 'dist/typeit.min.js',
-      format: 'iife',
-      globalName: 'TypeIt',
-      bundle: true,
-      minify: true,
-      platform: 'browser',
-      sourcemap: true,
-      footer: {
-        js: 'if (typeof TypeIt !== "undefined" && TypeIt.default) TypeIt = TypeIt.default;',
-      },
-    });
-    // 5. Copy TypeScript declarations to dist/
-    if (fs.existsSync(path.resolve(__dirname, 'src/index.d.ts'))) {
-      fs.copyFileSync(
-        path.resolve(__dirname, 'src/index.d.ts'),
-        path.resolve(__dirname, 'dist/index.d.ts')
-      );
-      console.log('✔ Copied dist/index.d.ts (TypeScript definitions)');
-    }
-
-    // 6. Copy browser bundle to demo/ for standalone demo and GitHub Pages
-    fs.copyFileSync(
-      path.resolve(__dirname, 'dist/typeit.min.js'),
-      path.resolve(__dirname, 'demo/typeit.min.js')
-    );
-    if (fs.existsSync(path.resolve(__dirname, 'dist/typeit.min.js.map'))) {
-      fs.copyFileSync(
-        path.resolve(__dirname, 'dist/typeit.min.js.map'),
-        path.resolve(__dirname, 'demo/typeit.min.js.map')
-      );
-    }
-    console.log('✔ Copied dist/typeit.min.js to demo/');
-
-    console.log('✨ Build completed successfully!');
-  } catch (error) {
-    console.error('❌ Build failed:', error);
-    process.exit(1);
+  // Copy TypeScript declarations
+  if (fs.existsSync('src/index.d.ts')) {
+    fs.copyFileSync('src/index.d.ts', 'dist/index.d.ts');
   }
+
+  // Copy minified bundle to demo/
+  ['dist/typeit.min.js', 'dist/typeit.min.js.map'].forEach((file) => {
+    const dest = file.replace('dist/', 'demo/');
+    if (fs.existsSync(file)) fs.copyFileSync(file, dest);
+  });
+
+  console.log(`✨ Build completed in ${Date.now() - start}ms`);
 }
 
-build();
+build().catch((err) => {
+  console.error('❌ Build failed:', err);
+  process.exit(1);
+});
