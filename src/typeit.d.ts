@@ -5,6 +5,8 @@ export interface TypeItOptions {
   typingSpeed?: number;
   /** Speed variation in milliseconds for human-like random variance (default: 50) */
   speedVariation?: number;
+  /** Whether the parent container automatically scrolls to bottom as text grows (default: true) */
+  autoScroll?: boolean;
 }
 
 export interface ClearOptions {
@@ -25,6 +27,7 @@ export class TypeIt {
     element: Element;
     typingSpeed: number;
     speedVariation: number;
+    autoScroll: boolean;
   };
   timer: ReturnType<typeof setTimeout> | null;
   queue: string[];

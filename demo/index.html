@@ -96,13 +96,14 @@
 
     .terminal-body {
       padding: 32px 24px;
-      min-height: 180px;
+      height: 220px;
+      overflow-y: auto;
+      scroll-behavior: smooth;
       font-family: var(--font-mono);
       font-size: 1.4rem;
       line-height: 1.6;
       color: var(--text-heading);
-      display: flex;
-      align-items: center;
+      display: block;
       word-break: break-word;
       white-space: pre-wrap;
     }
@@ -302,6 +303,7 @@
       <div class="button-group">
         <button class="primary" id="btnTypeSentence">Type Greeting</button>
         <button id="btnTypeChain">Chain Multiple Phrases</button>
+        <button id="btnTypeParagraph">Type Long Paragraph (Test Auto-Scroll)</button>
         <button class="danger" id="btnClearAnimated">Animated Clear</button>
         <button class="danger" id="btnClearInstant">Instant Clear</button>
       </div>
@@ -364,6 +366,10 @@ typist
         .type(" Smooth.")
         .type(" Chained.")
         .type(" Lightweight.");
+    });
+
+    document.getElementById('btnTypeParagraph').addEventListener('click', () => {
+      typist.type("\n\nTypeIt automatically monitors the container height and scrolls down smoothly as content overflows. This ensures that the newly typed characters and cursor always remain in view without needing custom scrolling code!");
     });
 
     document.getElementById('btnClearAnimated').addEventListener('click', () => {

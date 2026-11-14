@@ -14,6 +14,7 @@ A lightweight, zero-dependency JavaScript typing animation library with natural 
 
 - **Zero dependencies**: Weighs only ~1 KB minified and gzipped.
 - **Natural typing effect**: Configurable typing speed and random speed variation to mimic human typing.
+- **Auto-scrolling**: Automatically scrolls parent container to bottom as content grows via `ResizeObserver`.
 - **Chainable API**: Fluent queueing with `.type()`, `.clear()`, and speed adjustments.
 - **Universal compatibility**: Shipped in ESM (`.mjs`), CommonJS (`.cjs`), and browser standalone bundle (`.min.js`).
 - **Interactive demo**: Included directly in the repository to preview and experiment.
@@ -44,10 +45,10 @@ Include directly via jsDelivr or unpkg:
 
 ```html
 <!-- jsDelivr -->
-<script src="https://cdn.jsdelivr.net/npm/@jithinaji/typeit@1.0.0/dist/typeit.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@jithinaji/typeit@1.1.0/dist/typeit.min.js"></script>
 
 <!-- unpkg -->
-<script src="https://unpkg.com/@jithinaji/typeit@1.0.0/dist/typeit.min.js"></script>
+<script src="https://unpkg.com/@jithinaji/typeit@1.1.0/dist/typeit.min.js"></script>
 ```
 
 When loaded via a `<script>` tag, the `TypeIt` class is available globally on `window.TypeIt`.
@@ -66,7 +67,8 @@ const target = document.getElementById("header-title");
 const typist = new TypeIt({
   element: target,
   typingSpeed: 120,    // Base speed in milliseconds per character
-  speedVariation: 40   // Random variation (+/- ms) for natural typing rhythm
+  speedVariation: 40,  // Random variation (+/- ms) for natural typing rhythm
+  autoScroll: true     // Automatically scroll parent container (default: true)
 });
 
 typist
@@ -107,7 +109,7 @@ Creates a new `TypeIt` instance.
 
 #### Parameters:
 `data` can be either:
-1. A DOM `Element` (defaults to `typingSpeed: 150`, `speedVariation: 50`):
+1. A DOM `Element` (defaults to `typingSpeed: 150`, `speedVariation: 50`, `autoScroll: true`):
    ```javascript
    const typist = new TypeIt(document.querySelector("#demo"));
    ```
@@ -116,7 +118,8 @@ Creates a new `TypeIt` instance.
    const typist = new TypeIt({
      element: document.querySelector("#demo"), // Required DOM Element
      typingSpeed: 150,                         // Optional: default 150ms
-     speedVariation: 50                        // Optional: default 50ms
+     speedVariation: 50,                       // Optional: default 50ms
+     autoScroll: true                          // Optional: default true
    });
    ```
 

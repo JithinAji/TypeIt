@@ -6,11 +6,17 @@ const TypeIt = function (data) {
     this.settings.element = data;
     this.settings.typingSpeed = 150;
     this.settings.speedVariation = 50;
+    this.settings.autoScroll = true;
   }
   else {
     this.settings.element = data.element;
     this.settings.typingSpeed = data.typingSpeed ?? 150;
     this.settings.speedVariation = data.speedVariation ?? 50;
+    this.settings.autoScroll = data.autoScroll ?? true;
+  }
+
+  if (!(this.settings.element instanceof Element)) {
+    throw new Error("Initialize with an html element")
   }
 
   this.timer = null;
@@ -18,6 +24,7 @@ const TypeIt = function (data) {
   this.isTyping = false;
 
   this.events = {};
+  this.observer = null;
 }
 
 TypeIt.prototype.type = function (content) {
@@ -35,17 +42,47 @@ TypeIt.prototype.next = function () {
   if (this.queue.length === 0) {
     this.isTyping = false;
     this.emit("complete");
+
+    if (this.observer) {
+      this.observer.disconnect();
+      this.observer = null;
+    }
+
     return;
   }
 
   this.isTyping = true;
 
-  const content = this.queue.shift();
-  const settings = this.settings;
-  const element = settings.element;
+  var content = this.queue.shift();
+  var settings = this.settings;
+  var element = settings.element;
+  var parentElement = element.parentElement || null;
 
+  if (settings.autoScroll && parentElement) {
+    if (this.observer) {
+      this.observer.disconnect();
+    }
 
-  let index = 0;
+    var previousHeight = parentElement.scrollHeight;
+
+    this.observer = new ResizeObserver(scrollToBottom);
+    this.observer.observe(parentElement);
+
+    function scrollToBottom() {
+      var currentHeight = parentElement.scrollHeight;
+
+      if (currentHeight > previousHeight) {
+        parentElement.scrollTo({
+          top: parentElement.scrollHeight,
+          behavior: "smooth",
+        });
+
+        previousHeight = currentHeight;
+      }
+    }
+  }
+
+  var index = 0;
 
   const addContent = () => {
     if (index >= content.length) {
@@ -56,9 +93,9 @@ TypeIt.prototype.next = function () {
     element.textContent += content[index];
     index++;
 
-    const variation = (Math.random() * 2 - 1) * settings.speedVariation;
+    var variation = (Math.random() * 2 - 1) * settings.speedVariation;
 
-    const delay = Math.max(0, settings.typingSpeed + variation);
+    var delay = Math.max(0, settings.typingSpeed + variation);
 
     this.timer = setTimeout(addContent, delay);
 
@@ -83,11 +120,11 @@ TypeIt.prototype.setVariationSpeed = function (speed) {
 }
 
 TypeIt.prototype.clear = function (options = {}) {
-  const settings = this.settings;
-  const element = settings.element;
+  var settings = this.settings;
+  var element = settings.element;
 
-  const animated = options.animated ?? true;
-  const count = Math.max(
+  var animated = options.animated ?? true;
+  var count = Math.max(
     0,
     Math.floor(options.count ?? element.textContent.length)
   )
@@ -98,6 +135,11 @@ TypeIt.prototype.clear = function (options = {}) {
 
   clearTimeout(this.timer);
   this.timer = null;
+
+  if (this.observer) {
+    this.observer.disconnect();
+    this.observer = null;
+  }
 
   this.queue = [];
   this.isTyping = false;
@@ -112,9 +154,9 @@ TypeIt.prototype.clear = function (options = {}) {
     return this;
   }
 
-  let deleted = 0;
+  var deleted = 0;
 
-  const removeContent = () => {
+  function removeContent() {
     if (deleted >= count || !element.textContent.length) {
       this.timer = null;
       this.isTyping = false;
@@ -130,9 +172,9 @@ TypeIt.prototype.clear = function (options = {}) {
 
     deleted++;
 
-    const variation = (Math.random() * 2 - 1) * settings.speedVariation;
+    var variation = (Math.random() * 2 - 1) * settings.speedVariation;
 
-    const delay = Math.max(0, settings.typingSpeed + variation);
+    var delay = Math.max(0, settings.typingSpeed + variation);
 
     this.timer = setTimeout(removeContent, delay);
   }

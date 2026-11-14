@@ -29,15 +29,21 @@ var TypeIt = function(data) {
     this.settings.element = data;
     this.settings.typingSpeed = 150;
     this.settings.speedVariation = 50;
+    this.settings.autoScroll = true;
   } else {
     this.settings.element = data.element;
     this.settings.typingSpeed = data.typingSpeed ?? 150;
     this.settings.speedVariation = data.speedVariation ?? 50;
+    this.settings.autoScroll = data.autoScroll ?? true;
+  }
+  if (!(this.settings.element instanceof Element)) {
+    throw new Error("Initialize with an html element");
   }
   this.timer = null;
   this.queue = [];
   this.isTyping = false;
   this.events = {};
+  this.observer = null;
 };
 TypeIt.prototype.type = function(content) {
   this.queue.push(content);
@@ -50,13 +56,36 @@ TypeIt.prototype.next = function() {
   if (this.queue.length === 0) {
     this.isTyping = false;
     this.emit("complete");
+    if (this.observer) {
+      this.observer.disconnect();
+      this.observer = null;
+    }
     return;
   }
   this.isTyping = true;
-  const content = this.queue.shift();
-  const settings = this.settings;
-  const element = settings.element;
-  let index = 0;
+  var content = this.queue.shift();
+  var settings = this.settings;
+  var element = settings.element;
+  var parentElement = element.parentElement || null;
+  if (settings.autoScroll && parentElement) {
+    let scrollToBottom = function() {
+      var currentHeight = parentElement.scrollHeight;
+      if (currentHeight > previousHeight) {
+        parentElement.scrollTo({
+          top: parentElement.scrollHeight,
+          behavior: "smooth"
+        });
+        previousHeight = currentHeight;
+      }
+    };
+    if (this.observer) {
+      this.observer.disconnect();
+    }
+    var previousHeight = parentElement.scrollHeight;
+    this.observer = new ResizeObserver(scrollToBottom);
+    this.observer.observe(parentElement);
+  }
+  var index = 0;
   const addContent = () => {
     if (index >= content.length) {
       this.next();
@@ -64,8 +93,8 @@ TypeIt.prototype.next = function() {
     }
     element.textContent += content[index];
     index++;
-    const variation = (Math.random() * 2 - 1) * settings.speedVariation;
-    const delay = Math.max(0, settings.typingSpeed + variation);
+    var variation = (Math.random() * 2 - 1) * settings.speedVariation;
+    var delay = Math.max(0, settings.typingSpeed + variation);
     this.timer = setTimeout(addContent, delay);
   };
   addContent();
@@ -84,10 +113,10 @@ TypeIt.prototype.setVariationSpeed = function(speed) {
   return this;
 };
 TypeIt.prototype.clear = function(options = {}) {
-  const settings = this.settings;
-  const element = settings.element;
-  const animated = options.animated ?? true;
-  const count = Math.max(
+  var settings = this.settings;
+  var element = settings.element;
+  var animated = options.animated ?? true;
+  var count = Math.max(
     0,
     Math.floor(options.count ?? element.textContent.length)
   );
@@ -96,6 +125,10 @@ TypeIt.prototype.clear = function(options = {}) {
   }
   clearTimeout(this.timer);
   this.timer = null;
+  if (this.observer) {
+    this.observer.disconnect();
+    this.observer = null;
+  }
   this.queue = [];
   this.isTyping = false;
   if (!animated) {
@@ -103,8 +136,8 @@ TypeIt.prototype.clear = function(options = {}) {
     this.emit("clear");
     return this;
   }
-  let deleted = 0;
-  const removeContent = () => {
+  var deleted = 0;
+  function removeContent() {
     if (deleted >= count || !element.textContent.length) {
       this.timer = null;
       this.isTyping = false;
@@ -113,10 +146,10 @@ TypeIt.prototype.clear = function(options = {}) {
     }
     element.textContent = Array.from(element.textContent).slice(0, -1).join("");
     deleted++;
-    const variation = (Math.random() * 2 - 1) * settings.speedVariation;
-    const delay = Math.max(0, settings.typingSpeed + variation);
+    var variation = (Math.random() * 2 - 1) * settings.speedVariation;
+    var delay = Math.max(0, settings.typingSpeed + variation);
     this.timer = setTimeout(removeContent, delay);
-  };
+  }
   this.isTyping = true;
   removeContent();
   return this;
