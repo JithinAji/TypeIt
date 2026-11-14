@@ -67,6 +67,34 @@ TypeIt.prototype.next = function() {
   var settings = this.settings;
   var element = settings.element;
   var parentElement = element.parentElement || null;
+  if (settings.autoScroll && parentElement) {
+    if (this.observer) {
+      this.observer.disconnect();
+    }
+    if (typeof MutationObserver !== "undefined") {
+      this.observer = new MutationObserver(scrollToBottom);
+      this.observer.observe(element, {
+        childList: true,
+        characterData: true,
+        subtree: true
+      });
+    }
+    var scrollToBottom = function() {
+      if (typeof element.scrollIntoView === "function") {
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "end"
+        });
+      } else if (parentElement.scrollTo) {
+        parentElement.scrollTo({
+          top: parentElement.scrollHeight,
+          behavior: "smooth"
+        });
+      } else {
+        parentElement.scrollTop = parentElement.scrollHeight;
+      }
+    };
+  }
   var index = 0;
   const addContent = () => {
     if (index >= content.length) {
@@ -75,11 +103,6 @@ TypeIt.prototype.next = function() {
     }
     element.textContent += content[index];
     index++;
-    if (settings.autoScroll && parentElement) {
-      if (parentElement.scrollHeight > parentElement.clientHeight) {
-        parentElement.scrollTop = parentElement.scrollHeight;
-      }
-    }
     var variation = (Math.random() * 2 - 1) * settings.speedVariation;
     var delay = Math.max(0, settings.typingSpeed + variation);
     this.timer = setTimeout(addContent, delay);

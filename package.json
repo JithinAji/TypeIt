@@ -1,6 +1,6 @@
 {
   "name": "@jithinaji/typeit",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A lightweight JavaScript typing animation library with natural speed variation and chaining support.",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",

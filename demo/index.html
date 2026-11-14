@@ -300,6 +300,16 @@
         <input type="range" id="varRange" min="0" max="100" value="50" step="5">
       </div>
 
+      <div class="control-group" style="grid-column: 1 / -1; display: flex; flex-direction: row; align-items: center; justify-content: space-between; background: #090d13; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border);">
+        <div>
+          <label for="autoScrollToggle" style="margin-bottom: 2px; cursor: pointer;">
+            autoScroll: <span class="val-badge" id="autoScrollVal">true</span>
+          </label>
+          <div style="font-size: 0.8rem; color: #8b949e;">Automatically keeps cursor in view when text overflows parent element</div>
+        </div>
+        <input type="checkbox" id="autoScrollToggle" checked style="width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer;">
+      </div>
+
       <div class="button-group">
         <button class="primary" id="btnTypeSentence">Type Greeting</button>
         <button id="btnTypeChain">Chain Multiple Phrases</button>
@@ -311,12 +321,13 @@
 
     <div class="code-card">
       <h3>Quick Usage</h3>
-      <pre><code>// Browser / CDN
+      <pre><code>// Browser / CDN / ES Module
 const element = document.getElementById("target");
 const typist = new TypeIt({
   element: element,
-  typingSpeed: 120,
-  speedVariation: 40
+  typingSpeed: 120,    // Base speed in milliseconds (default: 150)
+  speedVariation: 40,  // Random variation in milliseconds (default: 50)
+  autoScroll: true     // Automatically scroll parent to bottom (default: true)
 });
 
 typist
@@ -333,12 +344,15 @@ typist
     const varRange = document.getElementById('varRange');
     const speedVal = document.getElementById('speedVal');
     const varVal = document.getElementById('varVal');
+    const autoScrollToggle = document.getElementById('autoScrollToggle');
+    const autoScrollVal = document.getElementById('autoScrollVal');
 
     // Initialize TypeIt with target element
     const typist = new TypeIt({
       element: target,
       typingSpeed: 150,
-      speedVariation: 50
+      speedVariation: 50,
+      autoScroll: true
     });
 
     // Initial greeting
@@ -355,6 +369,16 @@ typist
       const val = Number(e.target.value);
       varVal.textContent = `${val}ms`;
       typist.setVariationSpeed(val);
+    });
+
+    autoScrollToggle.addEventListener('change', (e) => {
+      const enabled = e.target.checked;
+      autoScrollVal.textContent = String(enabled);
+      typist.settings.autoScroll = enabled;
+      if (!enabled && typist.observer) {
+        typist.observer.disconnect();
+        typist.observer = null;
+      }
     });
 
     document.getElementById('btnTypeSentence').addEventListener('click', () => {

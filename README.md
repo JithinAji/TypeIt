@@ -14,7 +14,7 @@ A lightweight, zero-dependency JavaScript typing animation library with natural 
 
 - **Zero dependencies**: Weighs only ~1 KB minified and gzipped.
 - **Natural typing effect**: Configurable typing speed and random speed variation to mimic human typing.
-- **Auto-scrolling**: Automatically scrolls parent container to bottom as content grows via `ResizeObserver`.
+- **Auto-scrolling**: Automatically scrolls parent container smoothly to keep newly typed content in view via `MutationObserver` (customizable via `autoScroll: true | false`).
 - **Chainable API**: Fluent queueing with `.type()`, `.clear()`, and speed adjustments.
 - **Universal compatibility**: Shipped in ESM (`.mjs`), CommonJS (`.cjs`), and browser standalone bundle (`.min.js`).
 - **Interactive demo**: Included directly in the repository to preview and experiment.
