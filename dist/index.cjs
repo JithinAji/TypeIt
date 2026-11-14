@@ -68,18 +68,7 @@ TypeIt.prototype.next = function() {
   var element = settings.element;
   var parentElement = element.parentElement || null;
   if (settings.autoScroll && parentElement) {
-    if (this.observer) {
-      this.observer.disconnect();
-    }
-    if (typeof MutationObserver !== "undefined") {
-      this.observer = new MutationObserver(scrollToBottom);
-      this.observer.observe(element, {
-        childList: true,
-        characterData: true,
-        subtree: true
-      });
-    }
-    var scrollToBottom = function() {
+    let scrollToBottom = function() {
       if (typeof element.scrollIntoView === "function") {
         element.scrollIntoView({
           behavior: "smooth",
@@ -94,6 +83,18 @@ TypeIt.prototype.next = function() {
         parentElement.scrollTop = parentElement.scrollHeight;
       }
     };
+    if (this.observer) {
+      this.observer.disconnect();
+    }
+    if (typeof MutationObserver !== "undefined") {
+      this.observer = new MutationObserver(scrollToBottom);
+      this.observer.observe(element, {
+        childList: true,
+        characterData: true,
+        subtree: true
+      });
+    }
+    ;
   }
   var index = 0;
   const addContent = () => {

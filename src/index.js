@@ -72,7 +72,7 @@ TypeIt.prototype.next = function () {
       });
     }
 
-    var scrollToBottom = function () {
+    function scrollToBottom() {
       if (typeof element.scrollIntoView === "function") {
         element.scrollIntoView({
           behavior: "smooth",
