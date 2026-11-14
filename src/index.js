@@ -58,30 +58,6 @@ TypeIt.prototype.next = function () {
   var element = settings.element;
   var parentElement = element.parentElement || null;
 
-  if (settings.autoScroll && parentElement) {
-    if (this.observer) {
-      this.observer.disconnect();
-    }
-
-    var previousHeight = parentElement.scrollHeight;
-
-    this.observer = new ResizeObserver(scrollToBottom);
-    this.observer.observe(parentElement);
-
-    function scrollToBottom() {
-      var currentHeight = parentElement.scrollHeight;
-
-      if (currentHeight > previousHeight) {
-        parentElement.scrollTo({
-          top: parentElement.scrollHeight,
-          behavior: "smooth",
-        });
-
-        previousHeight = currentHeight;
-      }
-    }
-  }
-
   var index = 0;
 
   const addContent = () => {
@@ -93,12 +69,17 @@ TypeIt.prototype.next = function () {
     element.textContent += content[index];
     index++;
 
+    if (settings.autoScroll && parentElement) {
+      if (parentElement.scrollHeight > parentElement.clientHeight) {
+        parentElement.scrollTop = parentElement.scrollHeight;
+      }
+    }
+
     var variation = (Math.random() * 2 - 1) * settings.speedVariation;
 
     var delay = Math.max(0, settings.typingSpeed + variation);
 
     this.timer = setTimeout(addContent, delay);
-
   }
 
   addContent();
